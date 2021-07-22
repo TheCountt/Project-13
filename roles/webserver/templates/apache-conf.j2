@@ -1,5 +1,8 @@
-  <VirtualHost *:80>
-    ServerName localhost
-    ServerAlias tooling.com
+<VirtualHost *:80>
+    ServerAdmin webmaster@{{ domain }}
+    ServerName {{ domain }}
+    ServerAlias www.{{ domain }}
     DocumentRoot /var/www/html
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>
