@@ -2,13 +2,21 @@
 
 {# Set up VirtualHosts #}
 {% for vhost in apache_vhosts %}
-<VirtualHost {{ apache_listen_ip }}:{{ apache_listen_port }}>
-  ServerName {{ vhost.servername }}
+<VirtualHost *:80>
+  ServerName local.dev
 {% if vhost.serveralias is defined %}
   ServerAlias {{ vhost.serveralias }}
 {% endif %}
 {% if vhost.documentroot is defined %}
-  DocumentRoot "{{ vhost.documentroot }}"
+  DocumentRoot var/www/html
+    <Proxy "balancer://myapp1">
+          BalancerMember http://172.31.18.10:80 loadfactor=5 timeout=1
+          BalancerMember http://172.31.29.153:80 loadfactor=5 timeout=1
+          ProxySet lbmethod=bytraffic
+  </Proxy>
+  ProxyPreserveHost On
+  ProxyPass / balancer://myapp1/
+  ProxyPassReverse / balancer://myapp1/
 {% endif %}
 
 {% if vhost.serveradmin is defined %}
