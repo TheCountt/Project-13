@@ -1,16 +1,17 @@
 ---
 # Variable setup.
 - name: Include OS-specific variables.
+  become: true
   include_vars: "{{ ansible_os_family }}.yml"
 
 - name: Define nginx_user.
   set_fact:
-    nginx_user: 'nginx'
+    nginx_user: "{{ __nginx_user }}"
   when: nginx_user is not defined
 
 # Setup/install tasks.
 - include_tasks: setup-RedHat.yml
-  when: ansible_os_family == 'RedHat' or ansible_os_family == 'Rocky'
+  when: ansible_os_family == 'RedHat'
 
 - include_tasks: setup-Ubuntu.yml
   when: ansible_distribution == 'Ubuntu'
@@ -56,5 +57,5 @@
   become: yes
   service:
     name: nginx
-    state: present
+    state: restarted
     enabled: yes
